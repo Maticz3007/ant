@@ -58,26 +58,24 @@ int main(int argc, char *argv[])
         for(int j=0; j<size_c; j++)
             siatka[i][j] = '.';
 
-    for(int i=0; i<atoi(argv[6]); i++)
+    FILE *files[atoi(argv[6])];
+    for (int k = 0; k < atoi(argv[6]); k++)
     {
+        char filename[200];
+        sprintf(filename, "C:\\ant_output\\test_%d.txt", k);
+        files[k] = fopen(filename, "w");
         zmiana_pola(r, c, size_r, size_c, siatka, p);
         wypisz_siatke(size_r, size_c, siatka);
-    }
-
-    FILE *fptr;
-    fptr = fopen("C:\\ant_output\\test.txt","w"); //w makefile należy dać mkdir
-    if(fptr == NULL)
-    {
-        printf("Error!");
-        return -10;
-    }
-    for(int i=0; i<size_r; i++)
+        for(int i=0; i<size_r; i++)
         {
             for(int j=0; j<size_c; j++)
             {
-                putc(siatka[i][j], fptr);
+                putc(siatka[i][j], files[k]);
             }
-            fprintf(fptr, "\n");
+            fprintf(files[k], "\n");
         }
+    }
+
+
     return 0;
 }
