@@ -1,5 +1,9 @@
 #include "mrowka.h"
 
+struct siatka_t siatka;
+mrowka mrowki[max_mrowki];
+unsigned int liczba_mrowek;
+
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
 int inicjacja_siatki(int kolumny, int wiersze) {

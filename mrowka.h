@@ -40,7 +40,7 @@ struct siatka_t {
     unsigned int wiersze; /// Liczba wierszy siatki
     unsigned int kolumny; /// Liczba kolumn siatki
 };
-struct siatka_t siatka;
+extern struct siatka_t siatka;
 
 /// Pojedyncza Mrówka Langtona
 typedef struct {
@@ -50,9 +50,9 @@ typedef struct {
 } mrowka;
 
 /// Wektor wszystkich Mrówek Langtona
-mrowka mrowki[max_mrowki];
+extern mrowka mrowki[max_mrowki];
 /// Liczba mrowek
-unsigned int liczba_mrowek;
+extern unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
