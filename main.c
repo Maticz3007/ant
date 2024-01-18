@@ -218,7 +218,7 @@ int main(int argc, char *argv[])
     /// Indeksowanie od 1 -> Indeksowanie od 0
     arg_x--;
     arg_y--;
-   if (inicjacja_siatki(arg_n, arg_m) != 0) {
+   if (inicjacja_siatki(arg_n, arg_m, arg_g) != 0) {
         printf("Wystąpił błąd przy inicjacji siatki.\n");
         return 1;
    }

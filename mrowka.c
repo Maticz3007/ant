@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "mrowka.h"
 
 struct siatka_t siatka;
@@ -6,17 +7,20 @@ unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
-int inicjacja_siatki(int kolumny, int wiersze) {
+int inicjacja_siatki(int kolumny, int wiersze, int rand_perc) {
     if (wiersze <= 0 || kolumny <= 0) return 1;
     siatka.wiersze = wiersze;
     siatka.kolumny = kolumny;
     liczba_mrowek = 0;
     int i,j;
-    for (i = 0;i < wiersze;i++) {
-        for (j = 0;j < kolumny;j++) {
-            siatka.v[i][j] = siatka_biale;
+    for(i=0; i<wiersze; i++)
+        for(j=0; j<kolumny; j++)
+        {
+            if(1+rand()%100>rand_perc)
+                siatka.v[i][j] = siatka_biale;
+            else
+                siatka.v[i][j] = siatka_czarne;
         }
-    }
     return 0;
 }
 

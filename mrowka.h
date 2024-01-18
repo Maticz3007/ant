@@ -64,7 +64,7 @@ extern unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
-int inicjacja_siatki(int wiersze, int kolumny);
+int inicjacja_siatki(int wiersze, int kolumny, int rand_perc);
 
 /// Dodaje mrówkę do wektora mrowki
 /// Zwraca 0 jeśli się udało, 1 jeśli argumenty są nieprawidłowe lub 2 jeśli jest za dużo mrówek, aby dodać nową
