@@ -48,6 +48,7 @@ int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "C.UTF-8");
     /// wciąż nie wypisują się strzałki w prawo i lewo...
+    int rand_perc = 0; //r
     int iter = 0; //i
     int size_r = 0; //m
     int size_c = 0; //n
@@ -58,10 +59,13 @@ int main(int argc, char *argv[])
     char *input = NULL; //w, plik wejściowy z siatką (mapą) początkową i pozycją mrówki
     /// input jeszcze nie jest zaimplementowane
     int x;
-    while ((x = getopt (argc, argv, "n:m:o:i:y:x:w:s:")) != -1)
+    while ((x = getopt (argc, argv, "n:m:o:i:y:x:w:s:r:")) != -1)
     {
         switch (x)
         {
+            case 'r':
+                rand_perc = atoi(optarg);
+                break;
             case 's':
                 ant_state = atoi(optarg);
                 break;
@@ -87,7 +91,7 @@ int main(int argc, char *argv[])
                 ant_r = atoi(optarg);
                 break;
             case '?':
-                if (optopt == 'n' || optopt == 'm' || optopt == 'o' || optopt == 'i' || optopt == 'x' || optopt == 'y')
+                if (optopt == 'n' || optopt == 'm' || optopt == 'o' || optopt == 'i' || optopt == 'x' || optopt == 'y' || optopt == 'r')
                     fprintf (stderr, "Option -%x requires an argument.\n", optopt);
                 else if (isprint (optopt))
                     fprintf (stderr, "Unknown option `-%x'.\n", optopt);
@@ -120,7 +124,7 @@ int main(int argc, char *argv[])
         for(int j=0; j<size_c; j++)
             siatka[i][j] = '.';
     */
-   if (inicjacja_siatki(size_c, size_r) != 0) {
+   if (inicjacja_siatki(size_c, size_r, rand_perc) != 0) {
         printf("Wystąpił błąd przy inicjacji siatki.\n");
         return 1;
    }
