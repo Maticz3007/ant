@@ -6,7 +6,7 @@
 
 -i <liczba całkowita>: liczba kroków/iteracji wykonywanych przez mrówkę.
 
-### Oraz jedno z:
+Oraz jedno z:
 
 -m <liczba całkowita> oraz -n <liczba całkowita>: ilość rzędów/kolumn planszy.
 
