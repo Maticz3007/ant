@@ -17,9 +17,9 @@
 #define arg_i_default 1
 #define arg_i_min 0
 #define arg_i_max 100000
-#define arg_g_default 0.0
-#define arg_g_min 0.0
-#define arg_g_max 100.0
+#define arg_g_default 0
+#define arg_g_min 0
+#define arg_g_max 100
 #define arg_z_default 0
 #define arg_z_min 0
 #define arg_z_max 3
@@ -75,14 +75,14 @@ n       - liczba kolumn planszy. Domyślnie wynosi %i.\n\
 i       - liczba iteracji mrówki. Domyślnie wynosi %i.\n\
 name    - przedrostek plików wynikowych. Jeśli przedrostek nie zostanie podany, domyślnie program będzie wypisywał na standardowe wyjście.\n\
 input   - nazwa pliku wejściowego zawierającego siatkę. Plik powininen być w takim samym formacie, w jakim jest wypisywany przez program (z ramką, mrówki są na siatce. Domyślnie program nie wczytuje z pliku.\n\
-g       - zapełnienie planszy losowo wygenerowanymi \"czarnymi\" polami, wg zapełnienia podanego w procentach, domyślnie %g. Wypełnienie wygenerowanej planszy może trochę odbiegać od podanego wypełnienia.\n\
+g       - liczba naturalna oznaczająca zapełnienie planszy losowo wygenerowanymi \"czarnymi\" polami, wg zapełnienia podanego w procentach, domyślnie %i. Wypełnienie wygenerowanej planszy może trochę odbiegać od podanego wypełnienia.\n\
 x       - numer początkowej kolumna pierwszej mrówki Langtona (numerowany od 1, ignorowany jeśli podano plik wejściowy). Domyślnie to m/2 zaokrąglone w dół.\n\
 y       - numer początkowego wiersza pierwszej mrówki Langtona (numerowany od 1, ignorowany jeśli podano plik wejściowy). Domyślnie to n/2 zaokrąglone w dół.\n\
 z       - początkowy kierunek pierwszej mrówki Langtona (0 - góra, 1 - prawo, 2 - dół, 3 - lewo, domyślnie %i)\n\
 mrowki  - liczba mrówek Langtona na planszy, domyślnie %i. Jeśli liczba ta jest większa niż 1, współrzędne początkowe i kierunki pozostałych mrówek będą wylosowane. Liczba ta jest ignorowana, jeśli podano plik wejściowy.\n\
 h, help - wypisuje pomoc i wywołanie programu.\n\
 Przykład:\n\
-%s -m 100 -n 100 -i 1111 -name ant -g 25.12 -x 34 -y 77 -z 2 -mrowki 3\n", argv_0, arg_m_default, arg_n_default, arg_i_default, arg_g_default, arg_z_default, arg_mrowki_default, argv_0);
+%s -m 100 -n 100 -i 1111 -name ant -g 25 -x 34 -y 77 -z 2 -mrowki 3\n", argv_0, arg_m_default, arg_n_default, arg_i_default, arg_g_default, arg_z_default, arg_mrowki_default, argv_0);
 }
 void wypisz_pomoc_programu(char * argv_0) {
     printf("Program obliczający kolejne etapy mrówki Langtona i zapisujący je do plików lub na standardowe wyjście.\n");
@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
             arg_g = atof(optarg);
             if ((arg_g < arg_g_min || arg_g > arg_g_max) && !czy_blad) {
                 czy_blad = 1;
-                sprintf(komunikat_blad,"Argument -g powinien być liczbą rzeczywistą z przedziału <%g ; %g>\n", arg_g_min, arg_g_max);
+                sprintf(komunikat_blad,"Argument -g powinien być liczbą rzeczywistą z przedziału <%i,%i>\n", arg_g_min, arg_g_max);
             }
             break;
         case 'x':
