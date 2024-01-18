@@ -1,4 +1,7 @@
 #include <stdlib.h>
+#include <wchar.h>
+#include <locale.h>
+#include <stdio.h>
 #include "mrowka.h"
 
 struct siatka_t siatka;
@@ -7,21 +10,78 @@ unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
-int inicjacja_siatki(int kolumny, int wiersze, int rand_perc) {
-    if (wiersze <= 0 || kolumny <= 0) return 1;
+int inicjacja_siatki(int kolumny, int wiersze, double rand_perc, char * arg_input) {
+    setlocale(LC_ALL, "");
+    int i=-1, j=0;
     siatka.wiersze = wiersze;
     siatka.kolumny = kolumny;
-    liczba_mrowek = 0;
-    int i,j;
-    for(i=0; i<wiersze; i++)
-        for(j=0; j<kolumny; j++)
-        {
-            siatka.lm[i][j] = 0;
-            if(1+rand()%100>rand_perc)
-                siatka.v[i][j] = siatka_biale;
-            else
-                siatka.v[i][j] = siatka_czarne;
+    if (arg_input==NULL) {
+        if (wiersze <= 0 || kolumny <= 0) return 1;
+        liczba_mrowek = 0;
+        for (i = 0; i < wiersze; i++)
+            for (j = 0; j < kolumny; j++) {
+                if (1 + rand() % 100 > rand_perc)
+                    siatka.v[i][j] = siatka_biale;
+                else
+                    siatka.v[i][j] = siatka_czarne;
+            }
+    }
+    else
+    {
+        wchar_t temp;
+        FILE * fptr = fopen(arg_input, "r");
+        liczba_mrowek = 0;
+        while ((temp = fgetwc(fptr)) != WEOF) {
+            switch (temp) {
+                case 0x2588: // Unicode dla '█'
+                    siatka.v[i][j] = siatka_czarne;
+                    break;
+                case ' ':
+                    siatka.v[i][j] = siatka_biale;
+                    break;
+                case 0x25B2: // Unicode dla '▲'
+                    siatka.v[i][j] = siatka_czarne;
+                    dodaj_mrowke(j, i, 0);
+                    break;
+                case 0x25B6: // Unicode dla '▶'
+                    siatka.v[i][j] = siatka_czarne;
+                    dodaj_mrowke(j, i, 1);
+                    break;
+                case 0x25BC: // Unicode dla '▼'
+                    siatka.v[i][j] = siatka_czarne;
+                    dodaj_mrowke(j, i, 2);
+                    break;
+                case 0x25C0: // Unicode dla '◀'
+                    siatka.v[i][j] = siatka_czarne;
+                    dodaj_mrowke(j, i, 3);
+                    break;
+                case 0x25B3: // Unicode dla '△'
+                    siatka.v[i][j] = siatka_biale;
+                    dodaj_mrowke(j, i, 0);
+                    break;
+                case 0x25B7: // Unicode dla '▷'
+                    siatka.v[i][j] = siatka_biale;
+                    dodaj_mrowke(j, i, 1);
+                    break;
+                case 0x25BD: // Unicode dla '▽'
+                    siatka.v[i][j] = siatka_biale;
+                    dodaj_mrowke(j, i, 2);
+                    break;
+                case 0x25C1: // Unicode dla '◁'
+                    siatka.v[i][j] = siatka_biale;
+                    dodaj_mrowke(j, i, 3);
+                    break;}
+            j++;
+            if(temp=='\n')
+            {
+                j=-1;
+                i++;
+            }
+            if(i==kolumny) break; ///zapobieganie mazaniu po pamięci
         }
+
+
+    }
     return 0;
 }
 

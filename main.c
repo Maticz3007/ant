@@ -12,45 +12,7 @@
 
 
 
-/*
-void zmiana_pola(int* y, int* x, int size_r, int size_c, char siatka[size_r][size_c], int* ptr)
-{
-    if(siatka[*y][*x]=='.')
-    {
-        siatka[*y][*x]='X';
-        switch(*ptr)
-        {
-            case 0: *ptr = 1; *x=*x+1; break;
-            case 1: *ptr = 2; *y=*y+1; break;
-            case 2: *ptr = 3; *x=*x-1; break;
-            case 3: *ptr = 0; *y=*y-1; break;
-        }
-    }
-    else
-    if(siatka[*y][*x]=='X')
-    {
-        siatka[*y][*x]='.';
-        switch(*ptr)
-        {
-            case 0: *ptr = 3; *x=*x-1; break;
-            case 1: *ptr = 0; *y=*y-1; break;
-            case 2: *ptr = 1; *x=*x+1; break;
-            case 3: *ptr = 2; *y=*y+1; break;
-        }
-    }
-}
-void wypisz_siatke(int size_r, int size_c, char siatka[size_r][size_c])
-{
-    for(int i=0; i<size_r; i++)
-    {
-        for(int j=0; j<size_c; j++)
-        {
-            printf("%c", siatka[i][j]);
-        }
-        printf("\n");
-    }
-}
-*/
+
 void wypisz_wywolanie_programu(char * argv_0) {
     printf("%s -m l_wierszy -n l_kolumn -i l_iteracji -name przedrostek -input wejście -g zapełnienie -x kolumna -y wiersz -z kierunek -mrowki l_mrowek -h --help\n\
 Wszystkie argumenty są opcjonalne:\n\
@@ -83,7 +45,7 @@ int main(int argc, char *argv[])
     int arg_n = arg_n_default;
     int arg_i = arg_i_default;
     char * arg_name = "";
-    char * arg_input = "";
+    char * arg_input = NULL;
     double arg_g = arg_g_default;
     int arg_x = arg_m/2;
     int arg_y = arg_n/2;
@@ -206,7 +168,7 @@ int main(int argc, char *argv[])
     /// Indeksowanie od 1 -> Indeksowanie od 0
     arg_x--;
     arg_y--;
-    if (inicjacja_siatki(arg_n, arg_m, arg_g) != 0) {
+    if (inicjacja_siatki(arg_n, arg_m, arg_g, arg_input) != 0) {
         printf("Wystąpił błąd przy inicjacji siatki.\n");
         return 1;
     }
