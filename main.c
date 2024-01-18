@@ -1,6 +1,7 @@
 //#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 //#include <unistd.h>
 #include <getopt.h>
 #include <locale.h>
@@ -8,26 +9,7 @@
 
 #include "mrowka.h"
 
-/// Ograniczenia programu, domyślne wartości argumentów
-#define arg_m_default 10
-#define arg_m_min 1
-#define arg_m_max 100
-#define arg_n_default 10
-#define arg_n_min 1
-#define arg_n_max 100
-#define arg_i_default 10
-#define arg_i_min 0
-#define arg_i_max 100000
-#define arg_name_max_len 30
-#define arg_g_default 0
-#define arg_g_min 0
-#define arg_g_max 100
-#define arg_z_default 0
-#define arg_z_min 0
-#define arg_z_max 3
-#define arg_mrowki_default 1
-#define arg_mrowki_min 0
-#define arg_mrowki_max 100
+
 
 
 /*
@@ -95,6 +77,7 @@ static int help_flag = 0;
 int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "C.UTF-8");
+    srand(time(NULL));
     FILE * input_file;
     int arg_m = arg_m_default;
     int arg_n = arg_n_default;
@@ -223,19 +206,28 @@ int main(int argc, char *argv[])
     /// Indeksowanie od 1 -> Indeksowanie od 0
     arg_x--;
     arg_y--;
-   if (inicjacja_siatki(arg_n, arg_m, arg_g) != 0) {
+    if (inicjacja_siatki(arg_n, arg_m, arg_g) != 0) {
         printf("Wystąpił błąd przy inicjacji siatki.\n");
         return 1;
-   }
-   if (dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
+    }
+    if (dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
         printf("Wystąpił błąd przy dodawaniu mrówki.\n");
         return 2;
-   }
-
+    }
+    int k;
+    for (k = 1; k < arg_mrowki;) {
+        int rand_x,rand_y,rand_z;
+        rand_x = (rand()/(double)RAND_MAX)*arg_n;
+        if (rand_x == arg_n) rand_x--;
+        rand_y = (rand()/(double)RAND_MAX)*arg_m;
+        if (rand_y == arg_m) rand_y--;
+        rand_z = (rand()/(double)RAND_MAX)*4;
+        if (rand_z == 4) rand_z--;
+        if (dodaj_mrowke(rand_x, rand_y, rand_z) == 0) k++;
+    }
     FILE *files[arg_i_max];
-    for (int k = 0; k <= arg_i; k++)
-    {
-        if (arg_name == "") {
+    for (k = 0; k <= arg_i; k++) {
+        if (strlen(arg_name) == 0) {
             printf("%i:\n", k);
             wypisz_siatke(stdout);
         } else {
@@ -245,7 +237,8 @@ int main(int argc, char *argv[])
             wypisz_siatke(files[k]);
             fclose(files[k]);
         }
-        mrowka_ruch(mrowki); /// mrowki == mrowki+0 == &(mrowki[0])
+        //mrowka_ruch(mrowki); /// mrowki == mrowki+0 == &(mrowki[0])
+        mrowki_ruch();
     }
     return 0;
 }

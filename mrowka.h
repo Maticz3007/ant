@@ -4,12 +4,32 @@
 #include <stdio.h>
 #include <wchar.h>
 
-/// Maksymalna liczba wierszy siatki
-#define max_wiersze 500
-/// Maksymalna liczba kolumn siatki
-#define max_kolumny 500
-/// Maksymalna liczba mrówek
-#define max_mrowki 100 
+/// Ograniczenia programu i biblioteki, domyślne wartości argumentów programu
+#define arg_m_default 10
+#define arg_m_min 1
+#define arg_m_max 100 /// Maksymalna liczba wierszy siatki
+
+#define arg_n_default 10
+#define arg_n_min 1
+#define arg_n_max 100 /// Maksymalna liczba kolumn siatki
+
+#define arg_i_default 10
+#define arg_i_min 0
+#define arg_i_max 50000 /// Maksymalna liczba iteracji
+
+#define arg_name_max_len 30
+
+#define arg_g_default 0
+#define arg_g_min 0
+#define arg_g_max 100
+
+#define arg_z_default 0
+#define arg_z_min 0
+#define arg_z_max 3
+
+#define arg_mrowki_default 1
+#define arg_mrowki_min 0
+#define arg_mrowki_max 100 /// Maksymalna liczba mrówek
 
 /// Białe pole siatki
 #define siatka_biale 0
@@ -44,7 +64,13 @@
 struct siatka_t {
     /// Tablica dwuwymiarowa kolorów pól siatki
     /// Indeksowana od 0, v[wiersz][kolumna] - kolor pola w wierszu wiersz i kolumnie kolumna
-    unsigned int v[max_wiersze][max_kolumny]; 
+    unsigned int v[arg_m_max][arg_n_max];
+    /// Tablica dwuwymiarowa przechowująca pozycje mrówek
+    /// Na każdym polu może być co najwyżej 1 mrówka, ale w przypadku kolizji mogą przez chwilę być nawet 4
+    /// m[wiersz][kolumna][i] - indeks mrówki w wektorze mrowki znajdującej się na polu siatki w wierszu wiersz, kolumnie kolumna,
+    /// gdzie 0 <= i <= lm[wiersz][kolumna]
+    unsigned int m[arg_m_max][arg_n_max][4];
+    unsigned int lm[arg_m_max][arg_n_max];
     unsigned int wiersze; /// Liczba wierszy siatki
     unsigned int kolumny; /// Liczba kolumn siatki
 };
@@ -58,7 +84,7 @@ typedef struct {
 } mrowka;
 
 /// Wektor wszystkich Mrówek Langtona
-extern mrowka mrowki[max_mrowki];
+extern mrowka mrowki[arg_mrowki_max];
 /// Liczba mrowek
 extern unsigned int liczba_mrowek;
 
@@ -76,10 +102,19 @@ void mrowka_ruch(mrowka * m);
 /// Funkcja pomocnicza do mrowka_ruch, przesuwa mrówkę do przodu o 1 pole
 /// Jeśli mrówka wyjdzie poza siatkę, to wraca na początek wiersza / kolumny
 void mrowka_do_przodu(mrowka * m);
+/// Funkcja pomocnicza do mrowki_ruch
+/// Przesuwa mrówkę do tyłu o 1 pole
+/// UWAGA: działa inaczej niż obrócenie mrówki, ruch do przodu i obrócenie mrówki!
+void mrowka_do_tylu(mrowka * m);
 /// Funkcja pomocnicza do mrowka_ruch, odwraca kolor pola na którym jest mrówka
 void mrowka_odwroc_pole(mrowka * m);
 /// Funkcja pomocnicza do mrowka_ruch, skręca mrówkę w zależności od koloru pola
 void mrowka_skret(mrowka * m);
+/// Funkcja pomocnicza do mrowki_ruch, odwraca kierunek, w którym zwrócona jest mrówka
+void mrowka_odwroc_kierunek(mrowka * m);
+
+/// Ruch wszystkich mrówek na siatce jednocześnie
+void mrowki_ruch();
 
 /// Wypisywanie siatki i mrówek
 void wypisz_siatke(FILE * gdzie);

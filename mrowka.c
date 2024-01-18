@@ -2,7 +2,7 @@
 #include "mrowka.h"
 
 struct siatka_t siatka;
-mrowka mrowki[max_mrowki];
+mrowka mrowki[arg_mrowki_max];
 unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
@@ -16,6 +16,7 @@ int inicjacja_siatki(int kolumny, int wiersze, int rand_perc) {
     for(i=0; i<wiersze; i++)
         for(j=0; j<kolumny; j++)
         {
+            siatka.lm[i][j] = 0;
             if(1+rand()%100>rand_perc)
                 siatka.v[i][j] = siatka_biale;
             else
@@ -25,13 +26,18 @@ int inicjacja_siatki(int kolumny, int wiersze, int rand_perc) {
 }
 
 /// Dodaje mrówkę do wektora mrowki
-/// Zwraca 0 jeśli się udało, 1 jeśli argumenty są nieprawidłowe lub 2 jeśli jest za dużo mrówek, aby dodać nową
+/// Zwraca 0 jeśli się udało,
+///        1 jeśli argumenty są nieprawidłowe,
+///        2 jeśli jest za dużo mrówek, aby dodać nową lub
+///        3 jeśli na danym polu już jest mrówka
 int dodaj_mrowke(int x, int y, int kierunek) {
-    if (x < 0 || x >= siatka.kolumny || y < 0 || y >= siatka.wiersze || kierunek < 0 || kierunek > 3) return 0;
-    if (liczba_mrowek >= max_mrowki) return 2;
+    if (x < 0 || x >= siatka.kolumny || y < 0 || y >= siatka.wiersze || kierunek < 0 || kierunek > 3) return 1;
+    if (liczba_mrowek >= arg_mrowki_max) return 2;
+    if (siatka.lm[y][x] != 0) return 3;
     mrowki[liczba_mrowek].x = x;
     mrowki[liczba_mrowek].y = y;
     mrowki[liczba_mrowek].kierunek = kierunek;
+    siatka.m[y][x][siatka.lm[y][x]++] = liczba_mrowek;
     liczba_mrowek++;
     return 0;
 }
@@ -43,9 +49,24 @@ void mrowka_ruch(mrowka * m) {
     mrowka_odwroc_pole(m);
     mrowka_do_przodu(m);
 }
+int ow() {return 0;}
 /// Funkcja pomocnicza do mrowka_ruch, przesuwa mrówkę do przodu o 1 pole
 /// Jeśli mrówka wyjdzie poza siatkę, to wraca na początek wiersza / kolumny
 void mrowka_do_przodu(mrowka * m) {
+    /// Usuwamy mrówkę z odpowiedniego pola
+    int i = 0,indeks_mrowki;
+    while (mrowki[siatka.m[m->y][m->x][i]].kierunek != m->kierunek) {
+        if (siatka.lm[m->y][m->x] <= i) {
+            ow();
+            printf("AUĆ TO BOLI, MRÓWKA W y=%i, x=%i\n", m->y,m->x);
+            abort();
+        }
+        i++;
+    }
+    indeks_mrowki = siatka.m[m->y][m->x][i];
+    siatka.lm[m->y][m->x]--;
+    siatka.m[m->y][m->x][i] = siatka.m[m->y][m->x][siatka.lm[m->y][m->x]];    
+    /// Do przodu
     switch (m->kierunek)
     {
         case mrowka_U: m->y--; break;
@@ -57,6 +78,33 @@ void mrowka_do_przodu(mrowka * m) {
     if (m->y >= siatka.wiersze) m->y = 0;
     if (m->x < 0) m->x = siatka.kolumny-1;
     if (m->x >= siatka.kolumny) m->x = 0;
+    /// Aktualizujemy pole, na którym jest mrówka
+    siatka.m[m->y][m->x][siatka.lm[m->y][m->x]++] = indeks_mrowki;
+}
+/// Funkcja pomocnicza do mrowki_ruch
+/// Przesuwa mrówkę do tyłu o 1 pole
+/// UWAGA: działa inaczej niż obrócenie mrówki, ruch do przodu i obrócenie mrówki!
+void mrowka_do_tylu(mrowka * m) {
+    /// Usuwamy mrówkę z odpowiedniego pola
+    int i = 0,indeks_mrowki;
+    while (mrowki[siatka.m[m->y][m->x][i]].kierunek != m->kierunek) i++;
+    indeks_mrowki = siatka.m[m->y][m->x][i];
+    siatka.lm[m->y][m->x]--;
+    siatka.m[m->y][m->x][i] = siatka.m[m->y][m->x][siatka.lm[m->y][m->x]];    
+    /// Do przodu
+    switch (m->kierunek)
+    {
+        case mrowka_U: m->y++; break;
+        case mrowka_R: m->x--; break;
+        case mrowka_D: m->y--; break;
+        case mrowka_L: m->x++; break;
+    }
+    if (m->y < 0) m->y = siatka.wiersze-1;
+    if (m->y >= siatka.wiersze) m->y = 0;
+    if (m->x < 0) m->x = siatka.kolumny-1;
+    if (m->x >= siatka.kolumny) m->x = 0;
+    /// Aktualizujemy pole, na którym jest mrówka
+    siatka.m[m->y][m->x][siatka.lm[m->y][m->x]++] = indeks_mrowki;
 }
 /// Funkcja pomocnicza do mrowka_ruch, odwraca kolor pola na którym jest mrówka
 void mrowka_odwroc_pole(mrowka * m) {
@@ -73,6 +121,60 @@ void mrowka_skret(mrowka * m) {
         /// W lewo
         m->kierunek--;
         if (m->kierunek < 0) m->kierunek = 3;
+    }
+}
+/// Funkcja pomocnicza do mrowki_ruch, odwraca kierunek, w którym zwrócona jest mrówka
+void mrowka_odwroc_kierunek(mrowka * m) {
+    m->kierunek += 2;
+    if (m->kierunek > 3) m->kierunek -= 4;
+}
+
+/// Ruch wszystkich mrówek na siatce jednocześnie
+/// Implementacja kolizji jest niedokończona!!
+void mrowki_ruch() {
+    int i;
+    /// kolizje[i] -> (kolumna, wiersz), w którym zderzyły się maksymalnie 4 mrówki
+    unsigned int k_kolizje[arg_mrowki_max];
+    unsigned int w_kolizje[arg_mrowki_max];
+    unsigned int m_kolizje = 0;
+    unsigned int n_k_kolizje[arg_mrowki_max];
+    unsigned int n_w_kolizje[arg_mrowki_max];
+    unsigned int n_m_kolizje = 0;
+    for (i = 0;i < liczba_mrowek;i++) {
+        /// Wszystkie mrówki idą naprzód
+        mrowka_ruch(mrowki+i);
+        /// Sprawdzamy czy wystąpiły kolizje
+        if (siatka.lm[mrowki[i].y][mrowki[i].x] > 1) {
+            k_kolizje[m_kolizje] = mrowki[i].x;
+            w_kolizje[m_kolizje] = mrowki[i].y;
+            m_kolizje++;
+        }
+    }
+    while (m_kolizje > 0) {
+        for (i = 0;i < m_kolizje;i++) {
+            if (siatka.lm[w_kolizje[i]][k_kolizje[i]] == 1) continue; /// "Wyminęły się"
+            while (siatka.lm[w_kolizje[i]][k_kolizje[i]] != 0) {
+                /// Jeśli wystąpią kolizje, cofamy mrówki, które w niej uczestniczą,
+                /// a następnie odwracamy ich kierunki
+                mrowka * M = mrowki+siatka.m[w_kolizje[i]][k_kolizje[i]][0];
+                mrowka_do_tylu(M); /// Cofnięcie się niestety również może doprowadzić do kolizji
+                if (siatka.lm[M->y][M->x] > 1) {
+                    n_k_kolizje[n_m_kolizje] = M->x;
+                    n_w_kolizje[n_m_kolizje] = M->y;
+                    n_m_kolizje++;
+                }
+                mrowka_odwroc_kierunek(M);
+                if (siatka.lm[w_kolizje[i]][k_kolizje[i]] < 0) {
+                    printf("BOLI!\n");1/0;
+                }
+            }
+        }
+        m_kolizje = n_m_kolizje;
+        for (i = 0;i < n_m_kolizje;i++) {
+            k_kolizje[i] = n_k_kolizje[i];
+            w_kolizje[i] = n_w_kolizje[i];
+        }
+        n_m_kolizje = 0;
     }
 }
 
