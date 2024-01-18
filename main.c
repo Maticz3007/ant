@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 //#include <unistd.h>
-#include<getopt.h>
+#include <getopt.h>
 #include <locale.h>
+#include <string.h>
 
 #include "mrowka.h"
 
@@ -17,6 +18,7 @@
 #define arg_i_default 10
 #define arg_i_min 0
 #define arg_i_max 100000
+#define arg_name_max_len 30
 #define arg_g_default 0
 #define arg_g_min 0
 #define arg_g_max 100
@@ -105,7 +107,6 @@ int main(int argc, char *argv[])
     int arg_z = arg_z_default;
     int arg_mrowki = arg_mrowki_default;
     int czy_blad = 0;char komunikat_blad[300];
-    int iter;
     static struct option long_options[] =
     {
         {"m",      required_argument, 0, 'm'},
@@ -156,6 +157,10 @@ int main(int argc, char *argv[])
             break;
         case 'N':
             arg_name = optarg;
+            if (strlen(arg_name) > arg_name_max_len) {
+                czy_blad = 1;
+                sprintf(komunikat_blad,"Argument -N jest za długi, powinien być nie dłuższy niż %i",arg_name_max_len);
+            }
             break;
         case 'I':
             arg_input = optarg;
@@ -227,23 +232,20 @@ int main(int argc, char *argv[])
         return 2;
    }
 
-    FILE *files[iter];
-    for (int k = 0; k < arg_i; k++)
+    FILE *files[arg_i_max];
+    for (int k = 0; k <= arg_i; k++)
     {
-        //char filename[200];
-        //sprintf(filename, "%s_%d.txt", arg_N, k);
-        //files[k] = fopen(filename, "w");
+        if (arg_name == "") {
+            printf("%i:\n", k);
+            wypisz_siatke(stdout);
+        } else {
+            char filename[200];
+            sprintf(filename, "%s_%d.txt", arg_name, k);
+            files[k] = fopen(filename, "w");
+            wypisz_siatke(files[k]);
+            fclose(files[k]);
+        }
         mrowka_ruch(mrowki); /// mrowki == mrowki+0 == &(mrowki[0])
-        //wypisz_siatke(files[k]);
-        //wypisz_siatke(stdout);printf("\n");
-        /*
-        wypisz_siatke(arg_m, arg_n, siatka);
-        */
-        //fclose(files[k]);
     }
-    wypisz_siatke(stdout);
-    //printf ("size_c = %d, size_r = %d, name = %s, iter = %d, ant_c = %d, ant_r = %d, input = %s, ant_state = %d\n",
-    //        size_c, size_r, name, iter, ant_c, ant_r, input, ant_state);
-
     return 0;
 }
