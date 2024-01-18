@@ -13,10 +13,18 @@
 
 /// Białe pole siatki
 #define siatka_biale 0
-#define wypisz_siatka_biale "."
+#define wypisz_siatka_biale " "
 /// Czarne pole siatki
 #define siatka_czarne 1
-#define wypisz_siatka_czarne "#"
+#define wypisz_siatka_czarne "█"
+
+/// Ramka siatki
+#define ramka_V "│"
+#define ramka_H "─"
+#define ramka_d_l "└"
+#define ramka_d_r "┘"
+#define ramka_u_l "┌"
+#define ramka_u_r "┐"
 
 /// Kierunki mrówki
 #define mrowka_U 0 /// U - up (góra)
