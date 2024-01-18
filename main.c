@@ -14,7 +14,7 @@
 #define arg_n_default 10
 #define arg_n_min 1
 #define arg_n_max 100
-#define arg_i_default 1
+#define arg_i_default 10
 #define arg_i_min 0
 #define arg_i_max 100000
 #define arg_g_default 0
@@ -94,16 +94,16 @@ int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "C.UTF-8");
     FILE * input_file;
-    int arg_m = 10;
-    int arg_n = 10;
-    int arg_i = 10;
+    int arg_m = arg_m_default;
+    int arg_n = arg_n_default;
+    int arg_i = arg_i_default;
     char * arg_name = "";
     char * arg_input = "";
-    double arg_g = 10;
+    double arg_g = arg_g_default;
     int arg_x = arg_m/2;
     int arg_y = arg_n/2;
-    int arg_z = 0;
-    int arg_mrowki = 1;
+    int arg_z = arg_z_default;
+    int arg_mrowki = arg_mrowki_default;
     int czy_blad = 0;char komunikat_blad[300];
     int iter;
     static struct option long_options[] =
