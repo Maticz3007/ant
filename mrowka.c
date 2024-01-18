@@ -76,8 +76,15 @@ void mrowka_skret(mrowka * m) {
 void wypisz_siatke(FILE * gdzie) {
     int i,j,k;
     int mrowka_na_polu;
+    /// Pierwszy wiersz ramki siatki
+    fprintf(gdzie, ramka_u_l);
+    for (j = 0;j < siatka.kolumny; j++) fprintf(gdzie, ramka_H);
+    fprintf(gdzie, ramka_u_r);
+    fprintf(gdzie, "\n");
+    /// Wiersze siatki
     for(i = 0; i < siatka.wiersze; i++)
     {
+        fprintf(gdzie, ramka_V); /// Ramka pionowa
         for(j = 0; j < siatka.kolumny; j++)
         {
             mrowka_na_polu = -1;
@@ -111,6 +118,12 @@ void wypisz_siatke(FILE * gdzie) {
                 }
             }
         }
+        fprintf(gdzie, ramka_V); /// Ramka pionowa
         fprintf(gdzie,"\n");
     }
+    /// Ostatni wiersz ramki siatki
+    fprintf(gdzie, ramka_d_l);
+    for (j = 0;j < siatka.kolumny; j++) fprintf(gdzie, ramka_H);
+    fprintf(gdzie, ramka_d_r);
+    fprintf(gdzie, "\n");
 }
