@@ -7,7 +7,7 @@
 
 #include "mrowka.h"
 
-/// Ograniczenia programu
+/// Ograniczenia programu, domyślne wartości argumentów
 #define arg_m_default 10
 #define arg_m_min 1
 #define arg_m_max 100

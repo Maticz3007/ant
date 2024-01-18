@@ -39,9 +39,9 @@ int dodaj_mrowke(int x, int y, int kierunek) {
 /// Pojedynczy ruch Mrówki Langtona
 /// Mrówka odwraca kolor pola na którym jest, przesuwa się do przodu i skręca w zależności od koloru pola
 void mrowka_ruch(mrowka * m) {
+    mrowka_skret(m);
     mrowka_odwroc_pole(m);
     mrowka_do_przodu(m);
-    mrowka_skret(m);
 }
 /// Funkcja pomocnicza do mrowka_ruch, przesuwa mrówkę do przodu o 1 pole
 /// Jeśli mrówka wyjdzie poza siatkę, to wraca na początek wiersza / kolumny
