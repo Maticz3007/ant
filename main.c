@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
             printf("Dane we wczytanym pliku przekraczają ograniczenia programu.\n");
             return 1;
     }
-    if (strlen(arg_name) == 0 && dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
+    if (arg_input == NULL && dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
         printf("Wystąpił błąd przy dodawaniu mrówki.\n");
         return 2;
     }
