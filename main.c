@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
     char * arg_name = "";
     char * arg_input = NULL;
     double arg_g = arg_g_default;
-    int arg_x = arg_m/2;
-    int arg_y = arg_n/2;
+    int arg_x = -1; /// Jeszcze nie wczytaliśmy arg_n
+    int arg_y = -1; /// Jeszcze nie wczytaliśmy arg_m
     int arg_z = arg_z_default;
     int arg_mrowki = arg_mrowki_default;
     int czy_blad = 0;char komunikat_blad[300];
@@ -117,17 +117,25 @@ int main(int argc, char *argv[])
             fclose(input_file);
             break;
         case 'g':
-            arg_g = atof(optarg);
+            arg_g = atoi(optarg);
             if ((arg_g < arg_g_min || arg_g > arg_g_max) && !czy_blad) {
                 czy_blad = 1;
-                sprintf(komunikat_blad,"Argument -g powinien być liczbą rzeczywistą z przedziału <%i,%i>\n", arg_g_min, arg_g_max);
+                sprintf(komunikat_blad,"Argument -g powinien być liczbą naturalną z przedziału <%i,%i>\n", arg_g_min, arg_g_max);
             }
             break;
         case 'x':
             arg_x = atoi(optarg);
+            if (arg_x > arg_n && !czy_blad) {
+                czy_blad = 1;
+                sprintf(komunikat_blad,"Argument -x powinien być wewnątrz siatki, tzn. w przedziale <%i,%i>\n", 1, arg_n);
+            }
             break;
         case 'y':
             arg_y = atoi(optarg);
+            if (arg_y > arg_m && !czy_blad) {
+                czy_blad = 1;
+                sprintf(komunikat_blad,"Argument -y powinien być wewnątrz siatki, tzn. w przedziale <%i,%i>\n", 1, arg_m);
+            }
             break;
         case 'z':
             arg_z = atoi(optarg);
@@ -153,11 +161,14 @@ int main(int argc, char *argv[])
         wypisz_pomoc_programu(argv[0]);
         return 0;
     }
-    if ((arg_x < 1 || arg_x > arg_n) && !czy_blad) {
+    /// Ustawienie domyślnych wartości arg_x i arg_y, gdy ich nie podano
+    if (arg_x < 0) arg_x = arg_n/2;
+    if (arg_y < 0) arg_y = arg_m/2;
+    if (arg_x > arg_n && !czy_blad) {
         czy_blad = 1;
         sprintf(komunikat_blad,"Argument -x powinien być wewnątrz siatki, tzn. w przedziale <%i,%i>\n", 1, arg_n);
     }
-    if ((arg_y < 1 || arg_y > arg_m) && !czy_blad) {
+    if (arg_y > arg_m && !czy_blad) {
         czy_blad = 1;
         sprintf(komunikat_blad,"Argument -y powinien być wewnątrz siatki, tzn. w przedziale <%i,%i>\n", 1, arg_m);
     }

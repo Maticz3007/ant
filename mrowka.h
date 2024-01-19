@@ -6,11 +6,11 @@
 
 /// Ograniczenia programu i biblioteki, domyślne wartości argumentów programu
 #define arg_m_default 10
-#define arg_m_min 1
+#define arg_m_min 2
 #define arg_m_max 100 /// Maksymalna liczba wierszy siatki
 
 #define arg_n_default 10
-#define arg_n_min 1
+#define arg_n_min 2
 #define arg_n_max 100 /// Maksymalna liczba kolumn siatki
 
 #define arg_i_default 10
@@ -90,7 +90,7 @@ extern unsigned int liczba_mrowek;
 
 /// Zainicjuj siatkę białymi polami
 /// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
-int inicjacja_siatki(int wiersze, int kolumny, double rand_perc, char * arg_input);
+int inicjacja_siatki(int wiersze, int kolumny, int rand_perc, char * arg_input);
 
 /// Dodaje mrówkę do wektora mrowki
 /// Zwraca 0 jeśli się udało, 1 jeśli argumenty są nieprawidłowe lub 2 jeśli jest za dużo mrówek, aby dodać nową

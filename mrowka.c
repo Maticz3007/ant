@@ -14,7 +14,7 @@ unsigned int liczba_mrowek;
 ///        2, jeśli wczytany plik ma nieprawidłowy format,
 ///        3, jeśli dane we wczytanym pliku przekraczają ograniczenia programu lub
 ///        0 w przeciwnym wypadku
-int inicjacja_siatki(int kolumny, int wiersze, double rand_perc, char * arg_input) {
+int inicjacja_siatki(int kolumny, int wiersze, int rand_perc, char * arg_input) {
     setlocale(LC_ALL, "");
     int i=-1, j=0;
     if (arg_input==NULL) {

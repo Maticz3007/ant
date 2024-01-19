@@ -5,7 +5,7 @@
 
 -i <liczba całkowita>: liczba kroków/iteracji wykonywanych przez mrówkę. Zakres: <1, 50000>, domyślnie 10.
 
--m <liczba całkowita> oraz -n <liczba całkowita>: ilość rzędów/kolumn planszy. Zakres: <1, 100>, domyślnie 10.
+-m <liczba całkowita> oraz -n <liczba całkowita>: liczba wierszy/kolumn planszy. Zakres: <2, 100>, domyślnie 10.
 
 -name <wyraz>: Przedrostek plików wynikowych. Jeśli przedrostek nie zostanie podany, domyślnie program będzie wypisywał na standardowe wyjście.
 
