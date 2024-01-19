@@ -13,7 +13,7 @@
 
 -z <0/1/2/3>: Początkowy stan pierwszej mrówki *przed rozpoczęciem pierwszego kroku*. 0 - w górę 1 - w prawo 2 - w dół 3 - w lewo, domyślnie 0.
 
--y (liczba całkowita) oraz -x (liczba całkowita): Rząd i kolumna określająca położenie startowe mrówki, domyślnie [floor(n/2)+1]-ty rząd/kolumna od lewej/góry. <TO_DO: coś się psuje i próbuje dawać mrówkę poza planszę 3x3 bez -x -y>
+-y (liczba całkowita) oraz -x (liczba całkowita): Rząd i kolumna określająca położenie startowe mrówki, domyślnie floor(n/2)ty rząd/kolumna od lewej/góry.
 
 -g (liczba całkowita): Procent zapełnienia początkowej planszy czarnymi polami. Zakres: <0, 100>, domyślnie 0.
 
