@@ -16,11 +16,11 @@
 void wypisz_wywolanie_programu(char * argv_0) {
     printf("%s -m l_wierszy -n l_kolumn -i l_iteracji -name przedrostek -input wejście -g zapełnienie -x kolumna -y wiersz -z kierunek -mrowki l_mrowek -h --help\n\
 Wszystkie argumenty są opcjonalne:\n\
-m       - liczba wierszy planszy. Domyślnie wynosi %i.\n\
-n       - liczba kolumn planszy. Domyślnie wynosi %i.\n\
+m       - liczba wierszy planszy. Domyślnie wynosi %i. Ignorowana, jeśli plansza jest wczytywana z pliku.\n\
+n       - liczba kolumn planszy. Domyślnie wynosi %i. Ignorowana, jeśli plansza jest wczytywana z pliku.\n\
 i       - liczba iteracji mrówki. Domyślnie wynosi %i.\n\
 name    - przedrostek plików wynikowych. Jeśli przedrostek nie zostanie podany, domyślnie program będzie wypisywał na standardowe wyjście.\n\
-input   - nazwa pliku wejściowego zawierającego siatkę. Plik powininen być w takim samym formacie, w jakim jest wypisywany przez program (z ramką, mrówki są na siatce. Domyślnie program nie wczytuje z pliku.\n\
+input   - nazwa pliku wejściowego zawierającego planszę. Plik powininen być w takim samym formacie, w jakim jest wypisywany przez program (z ramką, mrówki są na siatce, kodowanie UTF-8). Domyślnie program nie wczytuje z pliku.\n\
 g       - liczba naturalna oznaczająca zapełnienie planszy losowo wygenerowanymi \"czarnymi\" polami, wg zapełnienia podanego w procentach, domyślnie %i. Wypełnienie wygenerowanej planszy może trochę odbiegać od podanego wypełnienia.\n\
 x       - numer początkowej kolumna pierwszej mrówki Langtona (numerowany od 1, ignorowany jeśli podano plik wejściowy). Domyślnie to m/2 zaokrąglone w dół.\n\
 y       - numer początkowego wiersza pierwszej mrówki Langtona (numerowany od 1, ignorowany jeśli podano plik wejściowy). Domyślnie to n/2 zaokrąglone w dół.\n\
@@ -32,7 +32,7 @@ Przykład:\n\
 }
 void wypisz_pomoc_programu(char * argv_0) {
     printf("Program obliczający kolejne etapy mrówki Langtona i zapisujący je do plików lub na standardowe wyjście.\n");
-    /// printf("Program umożliwia symulowanie wielu mrówek Langtona.\n"); Jeszcze nie umożliwia
+    /// printf("Program umożliwia symulowanie wielu mrówek Langtona.\n"); Występują problemy z kolizjami
     wypisz_wywolanie_programu(argv_0);
 }
 static int help_flag = 0;
@@ -114,6 +114,7 @@ int main(int argc, char *argv[])
                 czy_blad = 1;
                 sprintf(komunikat_blad,"Nie znaleziono pliku określonego przez argument -I: %s\n", arg_input);
             }
+            fclose(input_file);
             break;
         case 'g':
             arg_g = atof(optarg);
@@ -168,11 +169,18 @@ int main(int argc, char *argv[])
     /// Indeksowanie od 1 -> Indeksowanie od 0
     arg_x--;
     arg_y--;
-    if (inicjacja_siatki(arg_n, arg_m, arg_g, arg_input) != 0) {
-        printf("Wystąpił błąd przy inicjacji siatki.\n");
-        return 1;
+    switch (inicjacja_siatki(arg_n, arg_m, arg_g, arg_input)) {
+        case 1:
+            printf("Podana liczba wierszy lub kolumn jest nieprawidłowa.\n");
+            return 1;
+        case 2:
+            printf("Wczytany plik ma nieprawidłowy format.\n");
+            return 1;
+        case 3:
+            printf("Dane we wczytanym pliku przekraczają ograniczenia programu.\n");
+            return 1;
     }
-    if (dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
+    if (strlen(arg_name) == 0 && dodaj_mrowke(arg_x, arg_y, arg_z) != 0) {
         printf("Wystąpił błąd przy dodawaniu mrówki.\n");
         return 2;
     }

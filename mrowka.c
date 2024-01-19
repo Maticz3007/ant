@@ -8,79 +8,128 @@ struct siatka_t siatka;
 mrowka mrowki[arg_mrowki_max];
 unsigned int liczba_mrowek;
 
-/// Zainicjuj siatkę białymi polami
-/// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa lub 0 w przeciwnym wypadku
+/// Zainicjuj siatkę białymi polami częściowo wypełnioną czarnymi polami
+/// lub wczytaj ją z pliku
+/// Zwraca 1, jeśli podana liczba wierszy lub kolumn jest nieprawidłowa,
+///        2, jeśli wczytany plik ma nieprawidłowy format,
+///        3, jeśli dane we wczytanym pliku przekraczają ograniczenia programu lub
+///        0 w przeciwnym wypadku
 int inicjacja_siatki(int kolumny, int wiersze, double rand_perc, char * arg_input) {
     setlocale(LC_ALL, "");
     int i=-1, j=0;
-    siatka.wiersze = wiersze;
-    siatka.kolumny = kolumny;
     if (arg_input==NULL) {
+        siatka.wiersze = wiersze;
+        siatka.kolumny = kolumny;
         if (wiersze <= 0 || kolumny <= 0) return 1;
         liczba_mrowek = 0;
-        for (i = 0; i < wiersze; i++)
+        for (i = 0; i < wiersze; i++) {
             for (j = 0; j < kolumny; j++) {
                 if (1 + rand() % 100 > rand_perc)
                     siatka.v[i][j] = siatka_biale;
                 else
                     siatka.v[i][j] = siatka_czarne;
             }
+        }
     }
     else
     {
+        kolumny = 1;wiersze = 1;
+        int cr_lf = 0; /// Obsługa końców linii  CR i LF
+        int czy_dodac_mrowke = 0;int mrowka_kierunek = 0;
+        int l_wczytanych_znakow = 0;
         wchar_t temp;
         FILE * fptr = fopen(arg_input, "r");
         liczba_mrowek = 0;
         while ((temp = fgetwc(fptr)) != WEOF) {
-            switch (temp) {
-                case 0x2588: // Unicode dla '█'
-                    siatka.v[i][j] = siatka_czarne;
+            if (temp == 0xFEFF) continue; /// BOM (Byte Order Mark)
+            if (temp == 0x000D || temp == 0x000A) {
+                if (j < kolumny-1) {
+                    //printf("JIiojjirfgiwergu %i %i\n",j,kolumny);
+                    return 2; /// Nieprawidłowy format pliku
+                }
+                cr_lf = 1;
+            } else {
+                l_wczytanych_znakow++;
+                if (cr_lf) {
+                    if (l_wczytanych_znakow != kolumny+2) return 2; /// Nieprawidłowy format pliku
+                    l_wczytanych_znakow = 1;
+                    j=0;i++;
+                } else if (j >= kolumny) {
+                    //printf("ewfvgiuvqwedfsxdĄĘo3tuiy %i %i %i %i\n",temp,i,j,kolumny);
+                    if (j >= arg_n_max) return 3; /// Zbyt wiele kolumn
+                    else if (i == -1) kolumny++;
+                    else return 2; /// Nieprawidłowy format pliku
+                }
+                cr_lf = 0;
+                //printf("ewfvgiuvqwedfo3tuiy %i %i %i %i %i\n",temp,i,j,kolumny,l_wczytanych_znakow);
+                switch (temp) {
+                    case 0x2514: break; // Unicode dla '└'
+                    case 0x2518: break; // Unicode dla '┘'
+                    case 0x250C: break; // Unicode dla '┌'
+                    case 0x2510: break; // Unicode dla '┐'
+                    case 0x2502: break; // Unicode dla '│'
+                    case 0x2500: // Unicode dla '─'
+                        j++;
+                        break;
+                    default:
+                        if (i == -1) return 2; /// Nieprawidłowy format pliku
+                        switch (temp) {
+                        case 0x2588: // Unicode dla '█'
+                            siatka.v[i][j] = siatka_czarne;j++;
+                            break;
+                        case 0x0020: // Unicode dla ' '
+                            siatka.v[i][j] = siatka_biale;j++;
+                            break;
+                        case 0x25B2: // Unicode dla '▲'
+                            siatka.v[i][j] = siatka_czarne;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 0;
+                            break;
+                        case 0x25B6: // Unicode dla '▶'
+                            siatka.v[i][j] = siatka_czarne;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 1;
+                            break;
+                        case 0x25BC: // Unicode dla '▼'
+                            siatka.v[i][j] = siatka_czarne;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 2;
+                            break;
+                        case 0x25C0: // Unicode dla '◀'
+                            siatka.v[i][j] = siatka_czarne;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 3;
+                            break;
+                        case 0x25B3: // Unicode dla '△'
+                            siatka.v[i][j] = siatka_biale;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 0;
+                            break;
+                        case 0x25B7: // Unicode dla '▷'
+                            siatka.v[i][j] = siatka_biale;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 1;
+                            break;
+                        case 0x25BD: // Unicode dla '▽'
+                            siatka.v[i][j] = siatka_biale;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 2;
+                            break;
+                        case 0x25C1: // Unicode dla '◁'
+                            siatka.v[i][j] = siatka_biale;
+                            czy_dodac_mrowke = 1; mrowka_kierunek = 3;
+                            break;
+                        default:
+                            return 2; /// Nieprawidłowy format pliku
+                    }
                     break;
-                case ' ':
-                    siatka.v[i][j] = siatka_biale;
-                    break;
-                case 0x25B2: // Unicode dla '▲'
-                    siatka.v[i][j] = siatka_czarne;
-                    dodaj_mrowke(j, i, 0);
-                    break;
-                case 0x25B6: // Unicode dla '▶'
-                    siatka.v[i][j] = siatka_czarne;
-                    dodaj_mrowke(j, i, 1);
-                    break;
-                case 0x25BC: // Unicode dla '▼'
-                    siatka.v[i][j] = siatka_czarne;
-                    dodaj_mrowke(j, i, 2);
-                    break;
-                case 0x25C0: // Unicode dla '◀'
-                    siatka.v[i][j] = siatka_czarne;
-                    dodaj_mrowke(j, i, 3);
-                    break;
-                case 0x25B3: // Unicode dla '△'
-                    siatka.v[i][j] = siatka_biale;
-                    dodaj_mrowke(j, i, 0);
-                    break;
-                case 0x25B7: // Unicode dla '▷'
-                    siatka.v[i][j] = siatka_biale;
-                    dodaj_mrowke(j, i, 1);
-                    break;
-                case 0x25BD: // Unicode dla '▽'
-                    siatka.v[i][j] = siatka_biale;
-                    dodaj_mrowke(j, i, 2);
-                    break;
-                case 0x25C1: // Unicode dla '◁'
-                    siatka.v[i][j] = siatka_biale;
-                    dodaj_mrowke(j, i, 3);
-                    break;}
-            j++;
-            if(temp=='\n')
-            {
-                j=-1;
-                i++;
+                }
+                if (czy_dodac_mrowke) {
+                    czy_dodac_mrowke = 0;
+                    siatka.wiersze = wiersze;siatka.kolumny = kolumny; /// Wymagane do dodania mrówki
+                    if (dodaj_mrowke(j,i,mrowka_kierunek) != 0) return 3; /// Zbyt wiele mrówek
+                    j++;
+                }
             }
-            if(i==kolumny) break; ///zapobieganie mazaniu po pamięci
+            if(i >= wiersze) {
+                if (i >= arg_m_max) return 3; /// Zbyt wiele wierszy
+                else wiersze++;
+            }
         }
-
-
+        siatka.wiersze = wiersze;siatka.kolumny = kolumny;
     }
     return 0;
 }
